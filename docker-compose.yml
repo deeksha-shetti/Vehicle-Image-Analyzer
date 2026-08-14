@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: vehicle_mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:alpine
+    container_name: vehicle_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: vehicle_api
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=${PORT:-3000}
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongodb:27017/vehicle_db}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - QUEUE_NAME=${QUEUE_NAME:-image-processing}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+    depends_on:
+      - mongodb
+      - redis
+    restart: on-failure
+
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    container_name: vehicle_worker
+    environment:
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongodb:27017/vehicle_db}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - QUEUE_NAME=${QUEUE_NAME:-image-processing}
+      - WORKER_CONCURRENCY=${WORKER_CONCURRENCY:-2}
+      - GOOGLE_VISION_API_KEY=${GOOGLE_VISION_API_KEY:-}
+    depends_on:
+      - mongodb
+      - redis
+    restart: on-failure
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: vehicle_frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:3000}
+    depends_on:
+      - api
+    restart: on-failure
+
+volumes:
+  mongo_data:
+

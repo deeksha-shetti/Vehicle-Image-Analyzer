@@ -1,0 +1,12 @@
+node_modules/
+.env
+dist/
+uploads/
+plate_candidates/
+plate_debug/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.DS_Store
+

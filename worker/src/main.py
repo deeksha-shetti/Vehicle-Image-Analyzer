@@ -7,25 +7,9 @@ import numpy as np
 # pyrefly: ignore [missing-import]
 import cv2
 # pyrefly: ignore [missing-import]
-import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
 from pymongo import MongoClient
 from bullmq import Worker
 from image_pipeline import run_image_analysis
-
-class HealthHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/plain")
-        self.end_headers()
-        self.wfile.write(b"OK")
-    def log_message(self, format, *args):
-        pass
-
-def start_health_server():
-    port = int(os.getenv("PORT", "8080"))
-    server = HTTPServer(("0.0.0.0", port), HealthHandler)
-    server.serve_forever()
 
 
 # Global MongoDB Client
@@ -196,10 +180,6 @@ async def main():
 
     print("[Worker] Connected to Redis", flush=True)
     print("[Worker] Waiting for jobs...", flush=True)
-
-    # Start background HTTP health server for cloud platforms (Render Free Tier)
-    threading.Thread(target=start_health_server, daemon=True).start()
-    print(f"[Worker] Health check HTTP server started on port {os.getenv('PORT', '8080')}", flush=True)
 
     worker = Worker(queue_name, process_job, {"connection": redis_opts})
 

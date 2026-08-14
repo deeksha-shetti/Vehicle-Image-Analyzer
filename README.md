@@ -508,41 +508,4 @@ The project intentionally avoids overengineering where a simpler approach is suf
 
 The focus is not on using the largest number of technologies, but on building a system that is practical, understandable, testable and debuggable.
 
-27. Final Submission Checklist
-
-Git repository is up to date.
-
-README.md is included.
-
-Docker Compose starts successfully.
-
-API starts successfully.
-
-Worker connects to Redis.
-
-MongoDB connects successfully.
-
-Frontend starts successfully.
-
-Image upload works.
-
-Processing ID is returned.
-
-Worker receives the job.
-
-Analysis is saved to MongoDB.
-
-GET /api/v1/images/:processingId works.
-
-Failed jobs are handled correctly.
-
-Tests pass.
-
-Sample API request and response are included.
-
-AI usage disclosure is included.
-
-Assumptions are documented.
-
-Final number-plate implementation is tested on representative images.
 

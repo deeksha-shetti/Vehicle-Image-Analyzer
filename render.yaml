@@ -1,18 +1,22 @@
 services:
   # ----------------------------------------------------
-  # 1. Backend REST API (Node.js Express + Docker)
+  # Unified Single Free Web Service (Frontend + API + Worker)
   # ----------------------------------------------------
   - type: web
-    name: vehicle-analyzer-api
+    name: vehicle-image-analyzer
     runtime: docker
-    rootDir: api
+    rootDir: .
     dockerfilePath: ./Dockerfile
     plan: free
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: PORT
         value: 3000
       - key: QUEUE_NAME
         value: image-processing
+      - key: WORKER_CONCURRENCY
+        value: 2
       - key: MONGODB_URI
         sync: false
       - key: REDIS_HOST
@@ -27,41 +31,5 @@ services:
         value: 634912983178655
       - key: CLOUDINARY_API_SECRET
         sync: false
-
-  # ----------------------------------------------------
-  # 2. Background Image Processing Worker (Python + OCR)
-  # ----------------------------------------------------
-  - type: worker
-    name: vehicle-analyzer-worker
-    runtime: docker
-    rootDir: worker
-    dockerfilePath: ./Dockerfile
-    plan: starter
-    envVars:
-      - key: QUEUE_NAME
-        value: image-processing
-      - key: WORKER_CONCURRENCY
-        value: 2
-      - key: MONGODB_URI
-        sync: false
-      - key: REDIS_HOST
-        sync: false
-      - key: REDIS_PORT
-        value: 6379
-      - key: REDIS_PASSWORD
-        sync: false
       - key: GOOGLE_VISION_API_KEY
         value: AIzaSyC1xlvAqphUiov5QPSbavex1l4UVMLRMQc
-
-  # ----------------------------------------------------
-  # 3. React Frontend (Vite Static Site)
-  # ----------------------------------------------------
-  - type: web
-    name: vehicle-analyzer-frontend
-    runtime: static
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
-    envVars:
-      - key: VITE_API_URL
-        sync: false

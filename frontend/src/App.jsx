@@ -4,7 +4,7 @@ import ProcessingView from './components/ProcessingView';
 import ResultsView from './components/ResultsView';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3000' : '');
 
 export default function App() {
   const [stage, setStage] = useState('idle'); // 'idle' | 'processing' | 'completed' | 'error'

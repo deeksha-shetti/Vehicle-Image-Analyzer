@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3000' : '');
 
 export default function ProcessingView({ processingId, onComplete, onError }) {
   const onCompleteRef = useRef(onComplete);

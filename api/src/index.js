@@ -1,4 +1,6 @@
 require('dotenv').config();
+const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const { connectDB, disconnectDB } = require('./config/db');
@@ -27,6 +29,18 @@ app.use((req, res, next) => {
 // Routes
 app.use('/health', healthRoutes);
 app.use('/api/v1/images', imageRoutes);
+
+// Serve Frontend static assets if available (Unified Docker deployment)
+const frontendDist = path.join(__dirname, '../../frontend/dist');
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res, next) => {
+    if (req.url.startsWith('/api') || req.url.startsWith('/health')) {
+      return next();
+    }
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+}
 
 // Centralized Error Handler
 app.use(errorHandler);
